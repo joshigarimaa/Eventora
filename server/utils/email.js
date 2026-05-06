@@ -5,7 +5,7 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // must be App Password
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -21,6 +21,7 @@ const sendOTPEmail = async (email, otp, type) => {
       <p>This OTP is valid for 5 minutes.</p>
     `,
   };
+
   try {
     await transporter.sendMail(mailOptions);
     console.log(`OTP sent to ${email} for ${type}`);
@@ -30,12 +31,31 @@ const sendOTPEmail = async (email, otp, type) => {
   }
 };
 
-const sendOTPEmail=async(email,otp,type)=>{
-    try {
-        
-    } catch (error) {
-        
-    }
-}
+const sendBookingEmail = async (userEmail, userName, eventTitle) => {
+  try {
+    const mailOptions = {
+      from: `"Eventora" <${process.env.EMAIL_USER}>`,
+      to: userEmail,
+      subject: `Booking Confirmation for ${eventTitle} - Eventora`,
+      html: `
+        <h2>Booking Confirmation</h2>
+        <p>Dear ${userName},</p>
+        <p>Your booking for the event <strong>${eventTitle}</strong> has been confirmed.</p>
+        <p>Thank you for using Eventora!</p>
+      `,
+    };
 
-module.exports = sendOTPEmail;
+    await transporter.sendMail(mailOptions);
+
+    console.log(
+      `Booking confirmation sent to ${userEmail} for ${eventTitle}`
+    );
+  } catch (error) {
+    console.log("Error sending email:", error);
+  }
+};
+
+module.exports = {
+  sendOTPEmail,
+  sendBookingEmail,
+};
